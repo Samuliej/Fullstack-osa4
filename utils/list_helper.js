@@ -26,7 +26,48 @@ const favoriteBlog = (blogs) => {
     }
     
 }
+
+const mostBlogs = (blogs) => {
+
+    if (blogs.length > 1) {
+
+        const authors = []
+        const bloggers = []
+
+        blogs.forEach(blog => {
+            if (!authors.includes(blog.author)) {
+                authors.push(blog.author)
+            }
+        })
+
+        authors.forEach(author => {
+            bloggers.push({author: author,
+            blogs: 0})
+        })
+
+        blogs.forEach(blog => {
+            author = bloggers.find(blogger => blogger.author === blog.author)
+            author.blogs = author.blogs + 1
+        })
+
+        let largestBlogger = bloggers[0]
+
+        bloggers.forEach(blogger => {
+            if (blogger.blogs > largestBlogger.blogs) {
+                largestBlogger = blogger
+            }
+        })
+
+        return {
+            author: largestBlogger.author,
+            blogs: largestBlogger.blogs
+        }
+    } else return {
+        author: blogs[0].author,
+        blogs: 1
+    }
+}
   
   module.exports = {
-    dummy, totalLikes, favoriteBlog
+    dummy, totalLikes, favoriteBlog, mostBlogs
   }
