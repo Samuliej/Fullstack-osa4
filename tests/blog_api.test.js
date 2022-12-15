@@ -2,6 +2,17 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
+const Blog = require('../models/blog')
+const helper = require('./test_helper')
+
+beforeEach(async () => {
+  await Blog.deleteMany({})
+
+  const blogObjects = helper.initialBlogs
+    .map(blog => new Blog(blog))
+  const promiseArray = blogObjects.map(blog => blog.save())
+  await Promise.all(promiseArray)
+})
 
 test('blogs are returned as json', async () => {
   await api
@@ -9,6 +20,7 @@ test('blogs are returned as json', async () => {
     .expect(200)
     .expect('Content-Type', /application\/json/)
 })
+
 
 test('there are two blogs currently', async () => {
   const response = await api.get('/api/blogs')
@@ -22,6 +34,29 @@ test('objects have an field named "id"', async () => {
       expect(blog.id).toBeDefined()
     })
 })
+
+test('a valid note can be added ', async () => {
+
+  const newBlog = {
+    "title": "TestiBlogi testien kautta",
+    "author": "Samppa",
+    "url": "https://www.eioleolemassa.fi",
+    "likes": 1
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+
+  const title = response.body.map(r => r.title)
+
+  expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
+  expect(title).toContain('TestiBlogi testien kautta')
+}) 
   
 afterAll(() => {
   mongoose.connection.close()
