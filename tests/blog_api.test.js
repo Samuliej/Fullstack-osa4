@@ -56,7 +56,25 @@ test('a valid note can be added ', async () => {
 
   expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
   expect(title).toContain('TestiBlogi testien kautta')
-}) 
+})
+
+test('if an blog object is made without an likes field, it is set to zero', async () => {
+  const newBlog = {
+    "title": "TestiBlogi ilman likes kenttää",
+    "author": "Samppa",
+    "url": "https://www.eiolevielakaanolemassa.fi"
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const addedBlog = response.body[response.body.length-1]
+  expect(addedBlog.likes).toBe(0)
+})
   
 afterAll(() => {
   mongoose.connection.close()
