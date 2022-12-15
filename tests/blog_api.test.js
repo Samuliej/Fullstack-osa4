@@ -12,9 +12,15 @@ test('blogs are returned as json', async () => {
 
 test('there are two blogs currently', async () => {
   const response = await api.get('/api/blogs')
-  console.log(response)
-  console.log(response.body)
   expect(response.body).toHaveLength(2)
+})
+
+test('objects have an field named "id"', async () => {
+    const response = await api.get('/api/blogs')
+    const blogArr = response.body
+    blogArr.forEach(blog => { 
+      expect(blog.id).toBeDefined()
+    })
 })
   
 afterAll(() => {
