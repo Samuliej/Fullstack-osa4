@@ -2,7 +2,8 @@ POST http://localhost:3001/api/blogs
 Content-Type: application/json
 
 {
-  "title": "TestiBgasaslogi",
-  "author": "Testi Ukkeli",
-  "url": "Strindsfasdfasdfg"
+  "title": "Tgasgasdfsadf",
+  "author": "Testi Ukkelifdsafdsafds",
+  "url": "Strindsfasdfasdfg",
+  "likes": 99
 }
