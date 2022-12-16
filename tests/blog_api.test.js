@@ -122,6 +122,33 @@ describe('deleting a blog', () => {
   })
 })
 
+
+describe('updating a blog', () => {
+  test('succeeds with status code 200', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToModify = blogsAtStart[0]
+    const originalBlogTitle = blogToModify.title
+    console.log(blogToModify)
+    
+    const blog = {
+      "title": "muokattu blogi testien kautta",
+      "author": "Samppa",
+      "url": "https://www.eiolfdsaeolemassa.fi",
+      "likes": 66
+    }
+
+    await api
+      .put(`/api/blogs/${blogToModify.id}`)
+      .send(blog)
+      .expect(200)
+
+    const blogsAtEnd = await helper.blogsInDb()
+
+    const titles = blogsAtEnd.map(b => b.title)
+    expect(titles).not.toContain(originalBlogTitle)
+  })
+})
+
   
 afterAll(() => {
   mongoose.connection.close()
