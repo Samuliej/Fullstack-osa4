@@ -19,6 +19,10 @@ blogsRouter.post('/', async (request, response) => {
   const body = request.body
   console.log(body)
   let blog = new Blog()
+  if (!body.title || !body.url) {
+    response.status(400).json({error: 'Title or Url field missing.'})
+    return;
+  }
 
   if (!body.likes) {
     blog = new Blog({
@@ -28,12 +32,12 @@ blogsRouter.post('/', async (request, response) => {
       likes: 0
     })
   } else {
-    blog = new Blog({
-      title: body.title,
-      author: body.author,
-      url: body.url,
-      likes: body.likes
-    })
+      blog = new Blog({
+        title: body.title,
+        author: body.author,
+        url: body.url,
+        likes: body.likes
+      })
   }
 
   const savedBlog = await blog.save()

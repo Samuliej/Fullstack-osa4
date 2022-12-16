@@ -75,6 +75,28 @@ test('if an blog object is made without an likes field, it is set to zero', asyn
   const addedBlog = response.body[response.body.length-1]
   expect(addedBlog.likes).toBe(0)
 })
+
+test('if blog is missing the title or the url field, server responds 400 Bad Request', async () => {
+  let newBlog = {
+    "author": "Samppa",
+    "url": "https://www.eiolevielakaanolemassa.fi"
+  }
+
+  await api
+  .post('/api/blogs')
+  .send(newBlog)
+  .expect(400)
+
+  newBlog = {
+    "author": "Samppa",
+    "title": "Testi"
+  }
+
+  await api
+  .post('/api/blogs')
+  .send(newBlog)
+  .expect(400)
+}) 
   
 afterAll(() => {
   mongoose.connection.close()
