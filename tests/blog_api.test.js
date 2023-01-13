@@ -4,6 +4,8 @@ const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
 const helper = require('./test_helper')
+const bcrypt = require('bcrypt')
+const User = require('../models/user')
 
 describe('when there is initially some blogs saved', () => {
   beforeEach(async () => {
@@ -40,13 +42,29 @@ describe('when there is initially some blogs saved', () => {
 })
 
 describe('adding a blog', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+    await user.save()
+
+    const passwordHash2 = await bcrypt.hash('salainen', 10)
+    const user2 = new User({ username: 'samppa', passwordHash})
+    await user2.save()
+  })
+
+
   test('a valid blog can be added ', async () => {
+
+    const currentUser = await User.findOne({ username: "samppa" })
 
     const newBlog = {
       "title": "TestiBlogi testien kautta",
       "author": "Samppa",
       "url": "https://www.eioleolemassa.fi",
-      "likes": 1
+      "likes": 1,
+      "user": currentUser._id
     }
   
     await api
@@ -64,10 +82,13 @@ describe('adding a blog', () => {
   })
   
   test('if an blog object is made without an likes field, it is set to zero', async () => {
+    const currentUser = await User.findOne({ username: "samppa" })
+
     const newBlog = {
       "title": "TestiBlogi ilman likes kenttää",
       "author": "Samppa",
-      "url": "https://www.eiolevielakaanolemassa.fi"
+      "url": "https://www.eiolevielakaanolemassa.fi",
+      "user": currentUser._id
     }
   
     await api
@@ -146,6 +167,60 @@ describe('updating a blog', () => {
 
     const titles = blogsAtEnd.map(b => b.title)
     expect(titles).not.toContain(originalBlogTitle)
+  })
+})
+
+describe('when there is initially one user at db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+
+    await user.save()
+  })
+
+  test('creation succeeds with a fresh username', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'samppa',
+      name: 'samuli toppi',
+      password: 'salasana'
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
+
+    const usernames = usersAtEnd.map(u => u.username)
+    expect(usernames).toContain(newUser.username)
+  })
+
+  test('creation fails with proper statuscode and message if username already taken', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'root',
+      name: 'Superuser',
+      password: 'salainen'
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('username must be unique')
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length)
   })
 })
 
