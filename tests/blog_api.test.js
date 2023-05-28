@@ -6,8 +6,8 @@ const Blog = require('../models/blog')
 const helper = require('./test_helper')
 const bcrypt = require('bcrypt')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
 
-/*
 
 describe('when there is initially some blogs saved', () => {
   beforeEach(async () => {
@@ -60,6 +60,7 @@ describe('adding a blog', () => {
   test('a valid blog can be added ', async () => {
 
     const currentUser = await User.findOne({ username: "samppa" })
+    const token = helper.generateToken(currentUser)
 
     const newBlog = {
       "title": "TestiBlogi testien kautta",
@@ -71,6 +72,7 @@ describe('adding a blog', () => {
   
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -85,6 +87,7 @@ describe('adding a blog', () => {
   
   test('if an blog object is made without an likes field, it is set to zero', async () => {
     const currentUser = await User.findOne({ username: "samppa" })
+    const token = helper.generateToken(currentUser)
 
     const newBlog = {
       "title": "TestiBlogi ilman likes kenttää",
@@ -95,6 +98,7 @@ describe('adding a blog', () => {
   
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -129,19 +133,36 @@ describe('adding a blog', () => {
 
 describe('deleting a blog', () => {
   test('succeeds with status code 204 if id is valid', async () => {
-    const blogsAtStart = await helper.blogsInDb()
-    const blogToDelete = blogsAtStart[0]
-    console.log(blogsAtStart)
-    console.log(blogToDelete)
+    
+    const user = await User.create({
+      username: 'testuser',
+      password: 'testpassword',
+      name: 'Test User'
+    })
+
+    
+    const token = helper.generateToken(user)
+
+    
+    const newBlog = new Blog({
+      title: 'Test Blog',
+      author: 'Test Author',
+      url: 'https://example.com',
+      likes: 5,
+      user: user._id
+    })
+    await newBlog.save()
+
 
     await api
-      .delete(`/api/blogs/${blogToDelete.id}`)
+      .delete(`/api/blogs/${newBlog.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(204)
     
     const blogsAtEnd = await helper.blogsInDb()
 
     const titles = blogsAtEnd.map(b => b.title)
-    expect(titles).not.toContain(blogToDelete.title)
+    expect(titles).not.toContain(newBlog.title)
   })
 })
 
@@ -273,5 +294,3 @@ describe('when there is initially one user at db', () => {
 afterAll(() => {
   mongoose.connection.close()
 })
-
-*/
