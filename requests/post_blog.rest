@@ -1,8 +1,9 @@
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
+//Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvcG90ZXVzIiwiaWQiOiI2NDczMGU5ZThjNWMxZjUzMDJkZDAxNTgiLCJpYXQiOjE2ODUyNzA1NDl9.LtSAMn13Yp14UICYxab9KtPE39yhokWqjZeOMiZeUAk
 
 {
-  "title": "4.17 uusi blogi",
+  "title": "4.19 uusi blogi salauksen kanssa",
   "author": "joku",
   "url": "https://www.eioleolemassa.fi",
   "likes": 1,
