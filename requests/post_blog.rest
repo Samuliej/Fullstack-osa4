@@ -2,9 +2,9 @@ POST http://localhost:3001/api/blogs
 Content-Type: application/json
 
 {
-  "title": "TestiBlogi restin kautta",
-  "author": "Samppa",
+  "title": "4.17 uusi blogi",
+  "author": "joku",
   "url": "https://www.eioleolemassa.fi",
   "likes": 1,
-  "user": "63c146f9d8d38de479873b88"
+  "user": "64730e9e8c5c1f5302dd0158"
 }
