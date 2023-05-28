@@ -9,6 +9,7 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
+
 blogsRouter.get('/:id', async (request, response) => {
   const blog = await Blog.findById(request.params.id)
   if (blog) {
@@ -17,11 +18,13 @@ blogsRouter.get('/:id', async (request, response) => {
     response.status(404).end()
   }
 })
+
   
 blogsRouter.post('/', async (request, response) => {
   const body = request.body
   // Varmistetaan tokenin oikeellisuus
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  console.log(decodedToken)
   if(!decodedToken.id) {
     return response.status(401).json({ error: 'token invalid' })
   }
@@ -59,10 +62,18 @@ blogsRouter.post('/', async (request, response) => {
   response.status(201).json(savedBlog)
 })
 
+
 blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndRemove(request.params.id)
-  response.status(204).end()
+  const blog = await Blog.findById(request.params.id)
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if ( blog.user.toString() === decodedToken.id.toString()) {
+    await Blog.findByIdAndRemove(request.params.id)
+    response.status(204).end()
+  } else {
+    response.status(404).json({ error: 'You are not authorized to delete this blog' })
+  }
 })
+
 
 blogsRouter.put('/:id', async (request, response) => {
   const body = request.body
@@ -77,5 +88,6 @@ blogsRouter.put('/:id', async (request, response) => {
   const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {new:true})
   response.status(200).json(updatedBlog)
 })
+
 
 module.exports = blogsRouter

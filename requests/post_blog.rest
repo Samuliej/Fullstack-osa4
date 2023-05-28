@@ -3,9 +3,9 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVra2VsaSIsImlkIjoiNjQ3MzM0N2FiMWJlMzA3YThkOWIxYmY0IiwiaWF0IjoxNjg1MjcxNjg4fQ.RHY2zZo7kqdHvpXcQZWDpMc4TbM0aoc1y7j6Px49eNU
 
 {
-  "title": "4.20 uusi blogi refaktoroidun salauksen kanssa, eri käyttäjä",
+  "title": "4.20 uusi blogi refaktoroidun salauksen kanssa, eri käyttäjä taas",
   "author": "ihminen",
-  "url": "https://www.eioleolemassa.fi/dev/null",
+  "url": "www.juu.fi",
   "likes": 1,
   "user": "6473347ab1be307a8d9b1bf4"
 }
