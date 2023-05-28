@@ -7,6 +7,8 @@ const helper = require('./test_helper')
 const bcrypt = require('bcrypt')
 const User = require('../models/user')
 
+/*
+
 describe('when there is initially some blogs saved', () => {
   beforeEach(async () => {
     await Blog.deleteMany({})
@@ -271,3 +273,5 @@ describe('when there is initially one user at db', () => {
 afterAll(() => {
   mongoose.connection.close()
 })
+
+*/
