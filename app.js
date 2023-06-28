@@ -10,6 +10,11 @@ const loginRouter = require('./controllers/login')
 const middelware = require('./utils/middleware')
 const logger = require('./utils/logger')
 
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controllers/testing')
+  app.use('/api/testing', testingRouter)
+}
+
 mongoose.connect(config.MONGODB_URI)
   .then(() => {
     logger.info('connected to MongoDB')
